@@ -23,7 +23,10 @@ export const submitRepo = async (
     repoUrl,
   };
 
-  const { data } = await axiosInstance.post("/api/jobs/submit", body);
+  const { data } = await axiosInstance.post(
+    "/api/candidate/apply-to-job",
+    body,
+  );
 
   return data;
 };

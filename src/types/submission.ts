@@ -3,6 +3,7 @@ export type SubmitApplicationRequest = {
   jobId: number;
   candidateId: string;
   repoUrl: string;
+  applicationId: string;
 };
 
 export type SubmitApplicationResponse = {

@@ -10,6 +10,7 @@ export const PositionCard: React.FC<PositionCardProps> = ({ position, onSubmit }
     const [inputValue, setInputValue] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const isValidGithubUrl = (url: string) => /^https:\/\/(www\.)?github\.com\/.+/.test(url);
 
@@ -25,7 +26,8 @@ export const PositionCard: React.FC<PositionCardProps> = ({ position, onSubmit }
       setError(null);
       setIsSubmitting(true);
       await onSubmit(position.id, inputValue);
-      setInputValue("");
+
+      setIsSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
     } finally {
@@ -41,29 +43,45 @@ export const PositionCard: React.FC<PositionCardProps> = ({ position, onSubmit }
                 <input
                     type="text"
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => {
+                        setInputValue(e.target.value);
+                        setError(null);
+                    }}
                     placeholder="https://github.com/your/repo"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
                     onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isSuccess}
                 />
 
                 <button
                     onClick={handleSubmit}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isSuccess}
                     className={`px-4 py-2 text-sm font-medium rounded-md text-white transition
                         ${
-                        isSubmitting
+                        isSuccess
+                            ? "bg-green-600 cursor-default"
+                            : isSubmitting
                             ? "bg-blue-300 cursor-not-allowed"
                             : "bg-blue-600 hover:bg-blue-700"
                         }`}
-                    >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                >
+
+                    {isSuccess
+                        ? "Submitted ✓"
+                        : isSubmitting
+                        ? "Submitting..."
+                        : "Submit"}
                 </button>
             </div>
 
             {error && (
                 <p className="text-sm text-red-600 mt-2">{error}</p>
+            )}
+
+            {isSuccess && (
+                <p className="text-sm text-green-600 mt-2">
+                    Repository submitted successfully.
+                </p>
             )}
         </div>
     );

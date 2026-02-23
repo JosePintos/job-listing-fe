@@ -6,6 +6,7 @@ import { axiosInstance } from "./axiosInstance";
 
 const UUID = import.meta.env.VITE_UUID;
 const CANDIDATE_ID = import.meta.env.VITE_CANDIDATE_ID;
+const APPLICATION_ID = import.meta.env.VITE_APPLICATION_ID;
 
 export const getPositions = async () => {
   const { data } = await axiosInstance.get("/api/jobs/get-list");
@@ -21,6 +22,7 @@ export const submitRepo = async (
     jobId,
     candidateId: CANDIDATE_ID,
     repoUrl,
+    applicationId: APPLICATION_ID,
   };
 
   const { data } = await axiosInstance.post(

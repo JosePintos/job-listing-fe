@@ -1,42 +1,15 @@
 import React from 'react';
-import type { Position } from '../types/position';
 import PositionsList from '../components/PositionsList';
-import { getPositions, submitRepo } from '../api/jobsApi';
+import { usePositions } from '../hooks/usePositions';
 
 const Home: React.FC = () => {
-    const [positions, setPositions] = React.useState<Position[]>([]);
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [error, setError] = React.useState<string | null>(null);
-
-
-    const fetchPositions = async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
-            const data = await getPositions();
-            setPositions(data);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSubmit = async (jobId: number, repoUrl: string) => {
-        try {
-            const response = await submitRepo(jobId, repoUrl);
-
-            if (!response.ok) {
-                throw new Error("Submission failed.");
-            }
-        } catch (err: any) {
-            throw new Error(err.message);
-        }
-    };
-
-    React.useEffect(() => {
-        fetchPositions();
-    }, []);
+    const {
+        positions,
+        isLoading,
+        error,
+        retry,
+        submitApplication,
+    } = usePositions();
 
      return (
         <div className="w-full max-w-3xl bg-white rounded-xl shadow-md p-8">
@@ -52,7 +25,7 @@ const Home: React.FC = () => {
                 <div className="mb-4">
                 <p className="text-red-600 text-sm">{error}</p>
                 <button
-                    onClick={fetchPositions}
+                    onClick={retry}
                     className="text-sm text-blue-600 hover:underline mt-1"
                 >
                     Retry
@@ -63,7 +36,7 @@ const Home: React.FC = () => {
             {!isLoading && !error && (
                 <PositionsList
                 positions={positions}
-                onSubmit={handleSubmit}
+                onSubmit={submitApplication}
                 />
             )}
         </div>
